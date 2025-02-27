@@ -388,7 +388,6 @@ class WinningInputsFormView extends ViewComponent {
   render() {
     this.$container.innerHTML = __privateMethod(this, _WinningInputsFormView_instances, template_fn3).call(this);
     __privateMethod(this, _WinningInputsFormView_instances, initElements_fn).call(this);
-    __privateMethod(this, _WinningInputsFormView_instances, bindEvents_fn2).call(this);
   }
   setOnResultRequest(callback) {
     this.onResultRequest = callback;
@@ -466,6 +465,7 @@ _WinningInputsForm_instances = new WeakSet();
 handleResultRequest_fn = function({ winningNumbers, bonusNumber }) {
   try {
     LottoNumbersValidator.validate(KEY.WINNING_NUMBERS, winningNumbers);
+    validateDuplicate(winningNumbers);
     BonusNumberValidator.validate(bonusNumber, winningNumbers);
     const event = new CustomEvent(RESULT_EVENT_NAME, {
       detail: { winningNumbers, bonusNumber },
