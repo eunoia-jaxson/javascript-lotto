@@ -1,0 +1,223 @@
+:root {
+  --primary: #4e5ba6;
+  --footer-border-color: rgba(78, 91, 166, 0.2);
+  --dashboard-border-color: rgba(0, 0, 0, 0.12);
+  --greyscale-3: #b4b4b4;
+  --white-text-color: white;
+  --table-border-color: #ccc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+  background-color: var(--primary);
+  color: var(--white-text-color);
+  padding: 0 130px;
+}
+
+#main {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 80px;
+  font-weight: 700;
+  color: var(--primary);
+  border-top: 1px solid var(--footer-border-color);
+}
+.dashboard {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 414px;
+  padding: 32px 16px;
+  height: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--dashboard-border-color);
+}
+
+.purchase-price-area,
+.winning-inputs-area {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 24px;
+  gap: 8px;
+}
+.lottos-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.lotto-tickets {
+  display: flex;
+  flex-direction: column;
+  height: 195px;
+  gap: 8px;
+  overflow: auto;
+}
+.purchase-price-input {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.purchase-price-input input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--greyscale-3);
+  border-radius: 4px;
+}
+
+.purchase-price-input button {
+  width: 56px;
+  background-color: var(--primary);
+  color: var(--white-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.purchase-price-input .purchase-button:disabled {
+  cursor: not-allowed;
+  background-color: var(--greyscale-3);
+}
+.inputs-label {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.winning-inputs {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.winning-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.number-input {
+  width: 34px;
+  padding: 8px;
+  border: 1px solid var(--greyscale-3);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.result-button {
+  width: 100%;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.result-button:disabled {
+  cursor: not-allowed;
+  background-color: var(--greyscale-3);
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 400px;
+  max-width: 80%;
+  position: relative;
+  z-index: 9999;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.modal-content table thead th,
+.modal-content table tbody td {
+  border-top: 1px solid var(--table-border-color);
+  border-bottom: 1px solid var(--table-border-color);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.restart-button {
+  width: 100%;
+  background-color: var(--primary);
+  color: var(--white-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.restart-button:disabled {
+  cursor: not-allowed;
+  background-color: var(--greyscale-3);
+}
