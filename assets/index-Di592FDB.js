@@ -271,7 +271,7 @@ template_fn = function() {
   return `
       <label>구입할 금액을 입력해주세요.</label>
       <div class="purchase-price-input">
-        <input type="text" placeholder="금액" />
+        <input type="text" placeholder="금액 (1,000원 단위로 최대 1,000,000원)" />
         <button class="purchase-button" disabled>구입</button>
       </div>
     `;
@@ -325,7 +325,7 @@ handlePurchase_fn = function(purchasePrice) {
     this.$view.$container.dispatchEvent(event);
     this.$view.disableInput();
   } catch (e) {
-    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
+    alert(e.message);
   }
 };
 class LottoList {
@@ -475,7 +475,7 @@ handleResultRequest_fn = function({ winningNumbers, bonusNumber }) {
     });
     this.$view.$container.dispatchEvent(event);
   } catch (e) {
-    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
+    alert(e.message);
   }
 };
 const SELECTORS$1 = Object.freeze({
@@ -617,7 +617,7 @@ handleRestart_fn = function() {
     });
     $main.dispatchEvent(restartEvent);
   } catch (e) {
-    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
+    alert(e.message);
   }
 };
 const EVENT_TYPES = Object.freeze({
