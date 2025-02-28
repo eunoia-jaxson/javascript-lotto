@@ -280,7 +280,8 @@ bindEvents_fn = function() {
   this.$input.addEventListener("input", () => {
     this.$button.disabled = this.$input.value.trim() === "";
   });
-  this.$button.addEventListener("click", () => {
+  this.$container.addEventListener("submit", (e) => {
+    e.preventDefault();
     if (this.onPurchaseClick) {
       const purchasePrice = parseInt(this.$input.value, 10);
       this.onPurchaseClick(purchasePrice);
@@ -324,7 +325,7 @@ handlePurchase_fn = function(purchasePrice) {
     this.$view.$container.dispatchEvent(event);
     this.$view.disableInput();
   } catch (e) {
-    alert(e.message);
+    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
   }
 };
 class LottoList {
@@ -427,7 +428,8 @@ attachInputListeners_fn = function() {
   this.$bonusNumber.addEventListener("input", updateButtonState);
 };
 attachButtonClickListener_fn = function() {
-  this.$button.addEventListener("click", () => {
+  this.$container.addEventListener("submit", (e) => {
+    e.preventDefault();
     if (this.onResultRequest) {
       const winningNumbers = Array.from(this.$winningNumbers).map(
         (input) => parseInt(input.value, 10)
@@ -473,7 +475,7 @@ handleResultRequest_fn = function({ winningNumbers, bonusNumber }) {
     });
     this.$view.$container.dispatchEvent(event);
   } catch (e) {
-    alert(e.message);
+    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
   }
 };
 const SELECTORS$1 = Object.freeze({
@@ -615,7 +617,7 @@ handleRestart_fn = function() {
     });
     $main.dispatchEvent(restartEvent);
   } catch (e) {
-    alert(e.message);
+    alert("예상하지 못한 오류입니다. 다시 시도해주세요.");
   }
 };
 const EVENT_TYPES = Object.freeze({
@@ -649,13 +651,12 @@ template_fn5 = function() {
   return `
       <div class="dashboard">
         <h1>🎱 내 번호 당첨 확인 🎱</h1>
-        <div class="purchase-price-area"></div>
+        <form class="purchase-price-area"></form>
         <div class="lottos-area"></div>
-        <div class="winning-inputs-area"></div>
+        <form class="winning-inputs-area"></form>
       </div>
     `;
 };
-// 내부에서만 사용하는 렌더링 관련 메서드들을 프라이빗으로 전환합니다.
 renderDashboardLayout_fn = function() {
   this.$container.innerHTML = __privateMethod(this, _Main_instances, template_fn5).call(this);
 };
@@ -675,7 +676,6 @@ renderWinningInputsForm_fn = function() {
   );
   this.$winningInputsForm = new WinningInputsForm($winningInputsArea);
 };
-// 외부에서 이벤트 바인딩 호출 시 내부의 프라이빗 메서드들을 사용합니다.
 bindEvents_fn4 = function() {
   __privateMethod(this, _Main_instances, bindPurchaseLottosEvent_fn).call(this);
   __privateMethod(this, _Main_instances, bindCalculateResultEvent_fn).call(this);
