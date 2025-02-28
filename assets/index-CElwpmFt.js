@@ -271,7 +271,7 @@ template_fn = function() {
   return `
       <label>구입할 금액을 입력해주세요.</label>
       <div class="purchase-price-input">
-        <input type="text" placeholder="금액 (1,000원 단위로 최대 1,000,000원)" />
+        <input type="number" placeholder="금액 (1,000원 단위로 최대 1,000,000원)" min="${PURCHASE_PRICE.MIN}" unit="${PURCHASE_PRICE.UNIT}" max="${PURCHASE_PRICE.MAX}" />
         <button class="purchase-button" disabled>구입</button>
       </div>
     `;
@@ -351,7 +351,7 @@ template_fn2 = function(lottos) {
       </div>
     `;
 };
-const getInstructionMarkup = () => `<label>지난 주 당첨번호 6개와 보너스 번호 1개를 입력해주세요.</label>`;
+const getInstructionMarkup = () => `<label>지난 주 당첨번호 ${LOTTO.LENGTH}개와 보너스 번호 1개를 입력해주세요.</label>`;
 const getInputsLabelsMarkup = () => `
   <div class="inputs-label">
     <label>당첨 번호</label>
