@@ -5,6 +5,9 @@
   --greyscale-3: #b4b4b4;
   --white-text-color: white;
   --table-border-color: #ccc;
+  --backdrop-color: rgba(0, 0, 0, 0.5);
+  --backdrop-z-index: 9998;
+  --modal-z-index: 9999;
 }
 
 * {
@@ -15,7 +18,7 @@
 #app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .header {
@@ -87,14 +90,14 @@
   gap: 16px;
 }
 
-.purchase-price-input input {
+.purchase-input {
   width: 100%;
   padding: 8px;
   border: 1px solid var(--greyscale-3);
   border-radius: 4px;
 }
 
-.purchase-price-input button {
+.purchase-button {
   width: 56px;
   background-color: var(--primary);
   color: var(--white-text-color);
@@ -103,7 +106,8 @@
   cursor: pointer;
 }
 
-.purchase-price-input .purchase-button:disabled {
+.purchase-input:disabled,
+.purchase-button:disabled {
   cursor: not-allowed;
   background-color: var(--greyscale-3);
 }
@@ -153,12 +157,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 9998;
-
+  width: 100dvw;
+  height: 100dvh;
+  background-color: var(--backdrop-color);
+  z-index: var(--backdrop-z-index);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +177,7 @@
   width: 400px;
   max-width: 80%;
   position: relative;
-  z-index: 9999;
+  z-index: var(--modal-z-index);
 }
 
 .modal-close-button {
@@ -188,18 +190,14 @@
   cursor: pointer;
 }
 
-.modal-content h2 {
-  margin-top: 0;
-}
-
-.modal-content table {
+.modal-table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
 }
 
-.modal-content table thead th,
-.modal-content table tbody td {
+.modal-table-header,
+.modal-table-data {
   border-top: 1px solid var(--table-border-color);
   border-bottom: 1px solid var(--table-border-color);
   padding: 0.5rem;

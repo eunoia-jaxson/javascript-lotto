@@ -6,7 +6,7 @@ var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read fr
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
-var _numbers, _Lotto_instances, validate_fn, _winningNumbers, _bonusNumber, _WinningResult_instances, getMatchCount_fn, _lottos, _LottoMachine_instances, generateLottos_fn, _PurchaseFormView_instances, template_fn, bindEvents_fn, _PurchaseForm_instances, handlePurchase_fn, _LottoList_instances, template_fn2, _WinningInputsFormView_instances, template_fn3, initElements_fn, bindEvents_fn2, attachInputListeners_fn, attachButtonClickListener_fn, _WinningInputsForm_instances, handleResultRequest_fn, _WinningResultModalView_instances, template_fn4, bindEvents_fn3, attachBackdropListener_fn, attachCloseButtonListener_fn, attachRestartButtonListener_fn, close_fn, _WinningResultModal_instances, handleRestart_fn, _lottoMachine, _Main_instances, template_fn5, renderDashboardLayout_fn, renderPurchaseForm_fn, renderLottoList_fn, renderWinningInputsForm_fn, bindEvents_fn4, bindPurchaseLottosEvent_fn, bindCalculateResultEvent_fn, bindRestartEvent_fn;
+var _numbers, _Lotto_instances, validate_fn, _winningNumbers, _bonusNumber, _WinningResult_instances, getMatchCount_fn, _lottos, _LottoMachine_instances, generateLottos_fn, _PurchaseFormView_instances, template_fn, bindEvents_fn, removeEvents_fn, _handleInputChange, _handleFormSubmit, _PurchaseForm_instances, handlePurchase_fn, _LottoList_instances, template_fn2, _WinningInputsFormView_instances, template_fn3, initElements_fn, bindEvents_fn2, removeEvents_fn2, _handleInputChange2, _handleFormSubmit2, _WinningInputsForm_instances, handleResultRequest_fn, _WinningResultModalView_instances, template_fn4, initElements_fn2, bindEvents_fn3, removeBackdropEvents_fn, removeCloseButtonEvents_fn, removeRestartButtonEvents_fn, _handleBackdropClick, _handleCloseButtonClick, _handleRestartButtonClick, close_fn, _WinningResultModal_instances, handleRestart_fn, _lottoMachine, _Main_instances, template_fn5, renderDashboardLayout_fn, renderPurchaseForm_fn, renderLottoList_fn, renderWinningInputsForm_fn, bindEvents_fn4, bindPurchaseLottosEvent_fn, bindCalculateResultEvent_fn, bindRestartEvent_fn;
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -242,7 +242,7 @@ class ViewComponent {
   }
 }
 const PURCHASE_EVENT_NAME = "purchaseLottos";
-const SELECTORS$3 = Object.freeze({
+const PURCHASE_FORM_SELECTORS = Object.freeze({
   INPUT: ".purchase-price-input input",
   BUTTON: ".purchase-price-input button"
 });
@@ -250,13 +250,24 @@ class PurchaseFormView extends ViewComponent {
   constructor($container) {
     super($container);
     __privateAdd(this, _PurchaseFormView_instances);
+    __privateAdd(this, _handleInputChange, () => {
+      this.$button.disabled = this.$input.value.trim() === "";
+    });
+    __privateAdd(this, _handleFormSubmit, (e) => {
+      e.preventDefault();
+      if (!this.onPurchaseClick) return;
+      const purchasePrice = parseInt(this.$input.value, 10);
+      this.onPurchaseClick(purchasePrice);
+    });
     this.render();
     __privateMethod(this, _PurchaseFormView_instances, bindEvents_fn).call(this);
   }
   render() {
     this.$container.innerHTML = __privateMethod(this, _PurchaseFormView_instances, template_fn).call(this);
-    this.$input = this.$container.querySelector(SELECTORS$3.INPUT);
-    this.$button = this.$container.querySelector(SELECTORS$3.BUTTON);
+    this.$input = this.$container.querySelector(PURCHASE_FORM_SELECTORS.INPUT);
+    this.$button = this.$container.querySelector(
+      PURCHASE_FORM_SELECTORS.BUTTON
+    );
   }
   setOnPurchaseClick(callback) {
     this.onPurchaseClick = callback;
@@ -271,23 +282,26 @@ template_fn = function() {
   return `
       <label>구입할 금액을 입력해주세요.</label>
       <div class="purchase-price-input">
-        <input type="number" placeholder="금액 (1,000원 단위로 최대 1,000,000원)" min="${PURCHASE_PRICE.MIN}" step="${PURCHASE_PRICE.UNIT}" max="${PURCHASE_PRICE.MAX}" />
+        <input class="purchase-input" type="number" placeholder="금액 (1,000원 단위로 최대 1,000,000원)" min="${PURCHASE_PRICE.MIN}" step="${PURCHASE_PRICE.UNIT}" max="${PURCHASE_PRICE.MAX}" />
         <button class="purchase-button" disabled>구입</button>
       </div>
     `;
 };
 bindEvents_fn = function() {
-  this.$input.addEventListener("input", () => {
-    this.$button.disabled = this.$input.value.trim() === "";
-  });
-  this.$container.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (this.onPurchaseClick) {
-      const purchasePrice = parseInt(this.$input.value, 10);
-      this.onPurchaseClick(purchasePrice);
-    }
-  });
+  __privateMethod(this, _PurchaseFormView_instances, removeEvents_fn).call(this);
+  this.$input.addEventListener("input", __privateGet(this, _handleInputChange));
+  this.$container.addEventListener("submit", __privateGet(this, _handleFormSubmit));
 };
+removeEvents_fn = function() {
+  if (this.$input) {
+    this.$input.removeEventListener("input", __privateGet(this, _handleInputChange));
+  }
+  if (this.$container) {
+    this.$container.removeEventListener("submit", __privateGet(this, _handleFormSubmit));
+  }
+};
+_handleInputChange = new WeakMap();
+_handleFormSubmit = new WeakMap();
 const validateUnit = (purchasePrice) => {
   if (purchasePrice % PURCHASE_PRICE.UNIT !== 0) {
     throw new Error(ERROR_MESSAGE.PURCHASE.INVALID_UNIT);
@@ -308,10 +322,14 @@ const PurchasePriceValidator = {
 class PurchaseForm {
   constructor($container) {
     __privateAdd(this, _PurchaseForm_instances);
-    this.$view = new PurchaseFormView($container);
-    this.$view.setOnPurchaseClick(
-      (purchasePrice) => __privateMethod(this, _PurchaseForm_instances, handlePurchase_fn).call(this, purchasePrice)
-    );
+    try {
+      this.$view = new PurchaseFormView($container);
+      this.$view.setOnPurchaseClick(
+        (purchasePrice) => __privateMethod(this, _PurchaseForm_instances, handlePurchase_fn).call(this, purchasePrice)
+      );
+    } catch (e) {
+      alert(e.message);
+    }
   }
 }
 _PurchaseForm_instances = new WeakSet();
@@ -374,7 +392,7 @@ const getButtonMarkup = () => `<button class="result-button" disabled>결과 확
 const WINNING_NUMBERS_COUNT = 6;
 const WINNING_NUMBER_MAX_LENGTH = 2;
 const RESULT_EVENT_NAME = "calculateResult";
-const SELECTORS$2 = Object.freeze({
+const WINNING_INPUTS_FORM_SELECTORS = Object.freeze({
   WINNING_NUMBER_INPUTS: ".number-input.winning",
   BONUS_NUMBER_INPUT: ".number-input.bonus",
   RESULT_BUTTON: ".result-button"
@@ -383,6 +401,20 @@ class WinningInputsFormView extends ViewComponent {
   constructor($container) {
     super($container);
     __privateAdd(this, _WinningInputsFormView_instances);
+    __privateAdd(this, _handleInputChange2, () => {
+      this.$button.disabled = this.$bonusNumber.value.trim() === "" || Array.from(this.$winningNumbers).some(
+        ($input) => $input.value.trim() === ""
+      );
+    });
+    __privateAdd(this, _handleFormSubmit2, (e) => {
+      e.preventDefault();
+      if (!this.onResultRequest) return;
+      const winningNumbers = Array.from(this.$winningNumbers).map(
+        (input) => parseInt(input.value, 10)
+      );
+      const bonusNumber = parseInt(this.$bonusNumber.value, 10);
+      this.onResultRequest({ winningNumbers, bonusNumber });
+    });
     this.render();
     __privateMethod(this, _WinningInputsFormView_instances, bindEvents_fn2).call(this);
   }
@@ -405,40 +437,38 @@ template_fn3 = function() {
 };
 initElements_fn = function() {
   this.$winningNumbers = this.$container.querySelectorAll(
-    SELECTORS$2.WINNING_NUMBER_INPUTS
+    WINNING_INPUTS_FORM_SELECTORS.WINNING_NUMBER_INPUTS
   );
   this.$bonusNumber = this.$container.querySelector(
-    SELECTORS$2.BONUS_NUMBER_INPUT
+    WINNING_INPUTS_FORM_SELECTORS.BONUS_NUMBER_INPUT
   );
-  this.$button = this.$container.querySelector(SELECTORS$2.RESULT_BUTTON);
+  this.$button = this.$container.querySelector(
+    WINNING_INPUTS_FORM_SELECTORS.RESULT_BUTTON
+  );
 };
 bindEvents_fn2 = function() {
-  __privateMethod(this, _WinningInputsFormView_instances, attachInputListeners_fn).call(this);
-  __privateMethod(this, _WinningInputsFormView_instances, attachButtonClickListener_fn).call(this);
-};
-attachInputListeners_fn = function() {
-  const updateButtonState = () => {
-    this.$button.disabled = this.$bonusNumber.value.trim() === "" || Array.from(this.$winningNumbers).some(
-      ($input) => $input.value.trim() === ""
-    );
-  };
+  __privateMethod(this, _WinningInputsFormView_instances, removeEvents_fn2).call(this);
   this.$winningNumbers.forEach(
-    ($input) => $input.addEventListener("input", updateButtonState)
+    ($input) => $input.addEventListener("input", __privateGet(this, _handleInputChange2))
   );
-  this.$bonusNumber.addEventListener("input", updateButtonState);
+  this.$bonusNumber.addEventListener("input", __privateGet(this, _handleInputChange2));
+  this.$container.addEventListener("submit", __privateGet(this, _handleFormSubmit2));
 };
-attachButtonClickListener_fn = function() {
-  this.$container.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (this.onResultRequest) {
-      const winningNumbers = Array.from(this.$winningNumbers).map(
-        (input) => parseInt(input.value, 10)
-      );
-      const bonusNumber = parseInt(this.$bonusNumber.value, 10);
-      this.onResultRequest({ winningNumbers, bonusNumber });
-    }
-  });
+removeEvents_fn2 = function() {
+  if (this.$winningNumbers) {
+    this.$winningNumbers.forEach(
+      ($input) => $input.removeEventListener("input", __privateGet(this, _handleInputChange2))
+    );
+  }
+  if (this.$bonusNumber) {
+    this.$bonusNumber.removeEventListener("input", __privateGet(this, _handleInputChange2));
+  }
+  if (this.$container) {
+    this.$container.removeEventListener("submit", __privateGet(this, _handleFormSubmit2));
+  }
 };
+_handleInputChange2 = new WeakMap();
+_handleFormSubmit2 = new WeakMap();
 const validateDuplicateBonus = (bonusNumber, winningNumbers) => {
   if (winningNumbers.includes(bonusNumber)) {
     throw new Error(ERROR_MESSAGE.BONUS_NUMBER.DUPLICATE);
@@ -459,8 +489,12 @@ const BonusNumberValidator = {
 class WinningInputsForm {
   constructor($container) {
     __privateAdd(this, _WinningInputsForm_instances);
-    this.$view = new WinningInputsFormView($container);
-    this.$view.setOnResultRequest((data) => __privateMethod(this, _WinningInputsForm_instances, handleResultRequest_fn).call(this, data));
+    try {
+      this.$view = new WinningInputsFormView($container);
+      this.$view.setOnResultRequest((data) => __privateMethod(this, _WinningInputsForm_instances, handleResultRequest_fn).call(this, data));
+    } catch (e) {
+      alert(e.message);
+    }
   }
 }
 _WinningInputsForm_instances = new WeakSet();
@@ -478,7 +512,7 @@ handleResultRequest_fn = function({ winningNumbers, bonusNumber }) {
     alert(e.message);
   }
 };
-const SELECTORS$1 = Object.freeze({
+const WINNING_RESULT_MODAL_SELECTORS = Object.freeze({
   MODAL_ROOT: "#modal-root",
   MAIN: "#main",
   RESTART_BUTTON: ".restart-button",
@@ -499,20 +533,20 @@ function getTableRow(row) {
   const [matchText, prize, count] = row;
   return `
     <tr>
-      <td>${matchText}</td>
-      <td>${prize}</td>
-      <td>${count}</td>
+      <td class="modal-table-data">${matchText}</td>
+      <td class="modal-table-data">${prize}</td>
+      <td class="modal-table-data">${count}</td>
     </tr>
   `;
 }
 function getTableWrapperMarkup(rowsMarkup) {
   return `
-    <table>
+    <table class="modal-table">
       <thead>
         <tr>
-          <th>일치 개수</th>
-          <th>당첨금</th>
-          <th>당첨 개수</th>
+          <th class="modal-table-header">일치 개수</th>
+          <th class="modal-table-header">당첨금</th>
+          <th class="modal-table-header">당첨 개수</th>
         </tr>
       </thead>
       <tbody>
@@ -543,9 +577,22 @@ class WinningResultModalView extends ViewComponent {
   constructor() {
     super(...arguments);
     __privateAdd(this, _WinningResultModalView_instances);
+    __privateAdd(this, _handleBackdropClick, (event) => {
+      if (event.target !== this.$backdrop) return;
+      __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
+    });
+    __privateAdd(this, _handleCloseButtonClick, () => {
+      __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
+    });
+    __privateAdd(this, _handleRestartButtonClick, () => {
+      if (!this.onResultRequest) return;
+      __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
+      this.onResultRequest();
+    });
   }
   render(winningCounts, profitRate) {
     this.$container.innerHTML = __privateMethod(this, _WinningResultModalView_instances, template_fn4).call(this, winningCounts, profitRate);
+    __privateMethod(this, _WinningResultModalView_instances, initElements_fn2).call(this);
     __privateMethod(this, _WinningResultModalView_instances, bindEvents_fn3).call(this);
   }
   setOnResultRequest(callback) {
@@ -556,51 +603,70 @@ _WinningResultModalView_instances = new WeakSet();
 template_fn4 = function(winningCounts, profitRate) {
   return getModalMarkup(winningCounts, profitRate);
 };
+initElements_fn2 = function() {
+  this.$backdrop = this.$container.querySelector(
+    WINNING_RESULT_MODAL_SELECTORS.MODAL_BACKDROP
+  );
+  this.$closeButton = this.$container.querySelector(
+    WINNING_RESULT_MODAL_SELECTORS.MODAL_CLOSE_BUTTON
+  );
+  this.$restartButton = this.$container.querySelector(
+    WINNING_RESULT_MODAL_SELECTORS.RESTART_BUTTON
+  );
+};
 bindEvents_fn3 = function() {
-  __privateMethod(this, _WinningResultModalView_instances, attachBackdropListener_fn).call(this);
-  __privateMethod(this, _WinningResultModalView_instances, attachCloseButtonListener_fn).call(this);
-  __privateMethod(this, _WinningResultModalView_instances, attachRestartButtonListener_fn).call(this);
-};
-attachBackdropListener_fn = function() {
-  const $backdrop = this.$container.querySelector(SELECTORS$1.MODAL_BACKDROP);
-  if ($backdrop) {
-    $backdrop.addEventListener("click", (event) => {
-      if (event.target === $backdrop) {
-        __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
-      }
-    });
-  }
-};
-attachCloseButtonListener_fn = function() {
-  const $closeButton = this.$container.querySelector(
-    SELECTORS$1.MODAL_CLOSE_BUTTON
+  __privateMethod(this, _WinningResultModalView_instances, removeBackdropEvents_fn).call(this);
+  __privateMethod(this, _WinningResultModalView_instances, removeCloseButtonEvents_fn).call(this);
+  __privateMethod(this, _WinningResultModalView_instances, removeRestartButtonEvents_fn).call(this);
+  this.$backdrop.addEventListener(
+    "click",
+    (e) => __privateGet(this, _handleBackdropClick).call(this, e)
   );
-  if ($closeButton) {
-    $closeButton.addEventListener("click", () => {
-      __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
-    });
-  }
-};
-attachRestartButtonListener_fn = function() {
-  const $restartButton = this.$container.querySelector(
-    SELECTORS$1.RESTART_BUTTON
+  this.$closeButton.addEventListener(
+    "click",
+    (e) => __privateGet(this, _handleCloseButtonClick).call(this, e)
   );
-  if ($restartButton) {
-    $restartButton.addEventListener("click", () => {
-      if (this.onResultRequest) {
-        __privateMethod(this, _WinningResultModalView_instances, close_fn).call(this);
-        this.onResultRequest();
-      }
-    });
+  this.$restartButton.addEventListener(
+    "click",
+    (e) => __privateGet(this, _handleRestartButtonClick).call(this, e)
+  );
+};
+removeBackdropEvents_fn = function() {
+  if (this.$backdrop) {
+    this.$backdrop.removeEventListener("click", __privateGet(this, _handleBackdropClick));
   }
 };
+removeCloseButtonEvents_fn = function() {
+  if (this.$closeButton) {
+    this.$closeButton.removeEventListener(
+      "click",
+      __privateGet(this, _handleCloseButtonClick)
+    );
+  }
+};
+removeRestartButtonEvents_fn = function() {
+  if (this.$restartButton) {
+    this.$restartButton.removeEventListener(
+      "click",
+      __privateGet(this, _handleRestartButtonClick)
+    );
+  }
+};
+_handleBackdropClick = new WeakMap();
+_handleCloseButtonClick = new WeakMap();
+_handleRestartButtonClick = new WeakMap();
 close_fn = function() {
   this.$container.innerHTML = "";
+  __privateMethod(this, _WinningResultModalView_instances, removeBackdropEvents_fn).call(this);
+  __privateMethod(this, _WinningResultModalView_instances, removeCloseButtonEvents_fn).call(this);
+  __privateMethod(this, _WinningResultModalView_instances, removeRestartButtonEvents_fn).call(this);
 };
 class WinningResultModal {
   constructor() {
     __privateAdd(this, _WinningResultModal_instances);
-    this.$modalRoot = document.querySelector(SELECTORS$1.MODAL_ROOT);
+    this.$modalRoot = document.querySelector(
+      WINNING_RESULT_MODAL_SELECTORS.MODAL_ROOT
+    );
     this.$view = new WinningResultModalView(this.$modalRoot);
     this.$view.setOnResultRequest(() => __privateMethod(this, _WinningResultModal_instances, handleRestart_fn).call(this));
   }
@@ -610,7 +676,7 @@ class WinningResultModal {
 }
 _WinningResultModal_instances = new WeakSet();
 handleRestart_fn = function() {
-  const $main = document.querySelector(SELECTORS$1.MAIN);
+  const $main = document.querySelector(WINNING_RESULT_MODAL_SELECTORS.MAIN);
   try {
     const restartEvent = new CustomEvent(RESTART_EVENT_NAME, {
       bubbles: true
@@ -625,7 +691,8 @@ const EVENT_TYPES = Object.freeze({
   CALCULATE_RESULT: "calculateResult",
   RESTART: "restart"
 });
-const SELECTORS = Object.freeze({
+const MAIN_SELECTORS = Object.freeze({
+  MAIN: "#main",
   PURCHASE_PRICE_AREA: ".purchase-price-area",
   LOTTOS_AREA: ".lottos-area",
   WINNING_INPUTS_AREA: ".winning-inputs-area"
@@ -662,17 +729,19 @@ renderDashboardLayout_fn = function() {
 };
 renderPurchaseForm_fn = function() {
   const $purchasePriceArea = this.$container.querySelector(
-    SELECTORS.PURCHASE_PRICE_AREA
+    MAIN_SELECTORS.PURCHASE_PRICE_AREA
   );
   this.$purchaseForm = new PurchaseForm($purchasePriceArea);
 };
 renderLottoList_fn = function() {
-  const $lottosArea = this.$container.querySelector(SELECTORS.LOTTOS_AREA);
+  const $lottosArea = this.$container.querySelector(
+    MAIN_SELECTORS.LOTTOS_AREA
+  );
   this.$lottoList = new LottoList($lottosArea);
 };
 renderWinningInputsForm_fn = function() {
   const $winningInputsArea = this.$container.querySelector(
-    SELECTORS.WINNING_INPUTS_AREA
+    MAIN_SELECTORS.WINNING_INPUTS_AREA
   );
   this.$winningInputsForm = new WinningInputsForm($winningInputsArea);
 };
@@ -706,5 +775,9 @@ bindRestartEvent_fn = function() {
   });
 };
 document.addEventListener("DOMContentLoaded", () => {
-  new Main(SELECTORS$1.MAIN).render();
+  try {
+    new Main(MAIN_SELECTORS.MAIN).render();
+  } catch (e) {
+    alert(e.message);
+  }
 });
